@@ -4,6 +4,8 @@ import com.mandacarubroker.domain.stock.RequestStockDTO;
 import com.mandacarubroker.domain.stock.Stock;
 import com.mandacarubroker.service.StockService;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,29 +29,36 @@ public class StockController {
     this.stockService = receivedStockService;
   }
 
-  @GetMapping
+  @GetMapping(produces = "application/json")
   public List<Stock> getAllStocks() {
     return stockService.getAllStocks();
   }
 
-  @GetMapping("/{id}")
-  public Stock getStockById(@PathVariable final String id) {
-    return stockService.getStockById(id).orElse(null);
+  @GetMapping(value = "/{id}", produces = "application/json")
+  public ResponseEntity<?> getStockById(@PathVariable final String id) {
+    return stockService.getStockById(id)
+        .map(stock -> ResponseEntity.ok().body(stock))
+        .orElse(ResponseEntity.notFound().build());
   }
 
-  @PostMapping
+  @PostMapping(produces = "application/json", consumes = "application/json")
   public ResponseEntity<Stock> createStock(@RequestBody final RequestStockDTO data) {
+    if (data.price() <= 0) {
+      return ResponseEntity.badRequest().build();
+    }
     Stock createdStock = stockService.createStock(data);
-    return ResponseEntity.ok(createdStock);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdStock);
   }
 
-  @PutMapping("/{id}")
-  public Stock updateStock(@PathVariable final String id, @RequestBody final Stock updatedStock) {
-    return stockService.updateStock(id, updatedStock).orElse(null);
+  @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
+  public ResponseEntity<Stock> updateStock(@PathVariable final String id, @RequestBody final Stock updatedStock) {
+    Stock newStock = stockService.updateStock(id, updatedStock);
+    return ResponseEntity.status(HttpStatus.CREATED).body(newStock);
   }
 
-  @DeleteMapping("/{id}")
-  public void deleteStock(@PathVariable final String id) {
+  @DeleteMapping(value = "/{id}", produces = "application/json")
+  public ResponseEntity<Void> deleteStockById(@PathVariable final String id) {
     stockService.deleteStock(id);
+    return ResponseEntity.ok().build();
   }
 }

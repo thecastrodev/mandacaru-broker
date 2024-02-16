@@ -54,16 +54,16 @@ public class StockService {
    * @return An Optional containing the updated Stock object if the stock item was found
    *     and updated, or an empty Optional if the stock item with the given ID was not found.
    */
-  public Optional<Stock> updateStock(final String id, final Stock updatedStock) {
-    return stockRepository.findById(id)
-      .map(stock -> {
-        stock.setSymbol(updatedStock.getSymbol());
-        stock.setCompanyName(updatedStock.getCompanyName());
-        double newPrice = stock.changePrice(updatedStock.getPrice(), true);
-        stock.setPrice(newPrice);
-
-        return stockRepository.save(stock);
-      });
+  public Stock updateStock(final String id, final Stock updatedStock) {
+    stockRepository.findById(id)
+        .map(stock -> {
+          stock.setSymbol(updatedStock.getSymbol());
+          stock.setCompanyName(updatedStock.getCompanyName());
+          double newPrice = updatedStock.getPrice();
+          stock.setPrice(newPrice);
+          return stockRepository.save(stock);
+        });
+    return updatedStock;
   }
 
   public void deleteStock(final String id) {
