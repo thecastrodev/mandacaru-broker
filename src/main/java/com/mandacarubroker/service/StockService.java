@@ -21,7 +21,7 @@ public class StockService {
 
   private final StockRepository stockRepository;
 
-  public StockService(StockRepository stockRepository) {
+  public StockService(final StockRepository stockRepository) {
     this.stockRepository = stockRepository;
   }
 
@@ -29,7 +29,7 @@ public class StockService {
     return stockRepository.findAll();
   }
 
-  public Optional<Stock> getStockById(String id) {
+  public Optional<Stock> getStockById(final String id) {
     return stockRepository.findById(id);
   }
 
@@ -40,7 +40,7 @@ public class StockService {
   * @return A Stock object representing the newly created stock item, after being saved.
   * @throws IllegalArgumentException If the validation of the RequestStockDTO fails.
   */
-  public Stock createStock(RequestStockDTO data) {
+  public Stock createStock(final RequestStockDTO data) {
     Stock newAction = new Stock(data);
     validateRequestStockDTO(data);
     return stockRepository.save(newAction);
@@ -54,7 +54,7 @@ public class StockService {
    * @return An Optional containing the updated Stock object if the stock item was found
    *     and updated, or an empty Optional if the stock item with the given ID was not found.
    */
-  public Optional<Stock> updateStock(String id, Stock updatedStock) {
+  public Optional<Stock> updateStock(final String id, final Stock updatedStock) {
     return stockRepository.findById(id)
       .map(stock -> {
         stock.setSymbol(updatedStock.getSymbol());
@@ -66,7 +66,7 @@ public class StockService {
       });
   }
 
-  public void deleteStock(String id) {
+  public void deleteStock(final String id) {
     stockRepository.deleteById(id);
   }
 
@@ -76,7 +76,7 @@ public class StockService {
    * @param data The RequestStockDTO object to be validated.
    * @throws ConstraintViolationException If validation fails.
    */
-  public static void validateRequestStockDTO(RequestStockDTO data) {
+  public static void validateRequestStockDTO(final RequestStockDTO data) {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     Validator validator = factory.getValidator();
     Set<ConstraintViolation<RequestStockDTO>> violations = validator.validate(data);
@@ -85,9 +85,7 @@ public class StockService {
       StringBuilder errorMessage = new StringBuilder("Validation failed. Details: ");
 
       for (ConstraintViolation<RequestStockDTO> violation : violations) {
-        errorMessage.append(
-            String.format("[%s: %s], ", violation.getPropertyPath(), violation.getMessage())
-        );
+        errorMessage.append(String.format("[%s: %s], ", violation.getPropertyPath(), violation.getMessage()));
       }
 
       errorMessage.delete(errorMessage.length() - 2, errorMessage.length());
