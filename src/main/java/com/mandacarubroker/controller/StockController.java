@@ -4,7 +4,6 @@ import com.mandacarubroker.domain.stock.RequestStockDTO;
 import com.mandacarubroker.domain.stock.Stock;
 import com.mandacarubroker.service.StockService;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +33,9 @@ public class StockController {
     return stockService.getAllStocks();
   }
 
+  /**
+   * Get one stock by id.
+   */
   @GetMapping(value = "/{id}", produces = "application/json")
   public ResponseEntity<?> getStockById(@PathVariable final String id) {
     return stockService.getStockById(id)
@@ -41,6 +43,9 @@ public class StockController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  /**
+   * Create new stock from json.
+   */
   @PostMapping(produces = "application/json", consumes = "application/json")
   public ResponseEntity<Stock> createStock(@RequestBody final RequestStockDTO data) {
     if (data.price() <= 0) {
@@ -51,7 +56,8 @@ public class StockController {
   }
 
   @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
-  public ResponseEntity<Stock> updateStock(@PathVariable final String id, @RequestBody final Stock updatedStock) {
+  public ResponseEntity<Stock> updateStock(
+      @PathVariable final String id, @RequestBody final Stock updatedStock) {
     Stock newStock = stockService.updateStock(id, updatedStock);
     return ResponseEntity.status(HttpStatus.CREATED).body(newStock);
   }

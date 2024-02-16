@@ -61,6 +61,12 @@ public class Stock {
     return this.price + amount;
   }
 
+  /**
+   * Decrease the stock price.
+   *
+   * @param amount Value to be subtracted from the current stock price.
+   * @return The new stock price after the decrease.
+   */
   public double decreasePrice(final double amount) {
     double newPrice = this.price - amount;
     if (newPrice < 0) {
