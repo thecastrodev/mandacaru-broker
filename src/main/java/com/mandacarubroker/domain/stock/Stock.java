@@ -34,10 +34,10 @@ public class Stock {
    *
    * @param requestStockDTO The data object containing information to initialize the Stock.
    */
-  public Stock(RequestStockDTO requestStockDTO) {
+  public Stock(final RequestStockDTO requestStockDTO) {
     this.symbol = requestStockDTO.symbol();
     this.companyName = requestStockDTO.companyName();
-    this.price = changePrice(requestStockDTO.price(), true);
+    this.price = requestStockDTO.price();
   }
 
   /**
@@ -47,28 +47,26 @@ public class Stock {
    * @param increase A boolean indicating whether to increase or decrease the stock price.
    * @return The adjusted stock price after the operation.
    */
-  public double changePrice(double amount, boolean increase) {
+  public double changePrice(final double amount, final boolean increase) {
+    double newPrice;
     if (increase) {
-      if (amount < this.price) {
-        return increasePrice(amount);
-      } else {
-        return decreasePrice(amount);
-      }
+      newPrice = increasePrice(amount);
     } else {
-      if (amount > this.price) {
-        return increasePrice(amount);
-      } else {
-        return this.decreasePrice(amount);
-      }
+      newPrice = decreasePrice(amount);
     }
+    return newPrice;
   }
 
-  public double increasePrice(double amount) {
+  public double increasePrice(final double amount) {
     return this.price + amount;
   }
 
-  public double decreasePrice(double amount) {
-    return this.price - amount;
+  public double decreasePrice(final double amount) {
+    double newPrice = this.price - amount;
+    if (newPrice < 0) {
+      throw new IllegalStateException("Error! Price cannot be negative");
+    }
+    return newPrice;
   }
 
 }
